@@ -14,6 +14,16 @@ type CommandMenuProps = {
     onExecute: (index: number) => void;
 }
 
+/**
+ * Render a scrollable list of commands filtered by `query` and handle mouse-driven selection and execution.
+ *
+ * @param query - Filter string used to compute the displayed commands.
+ * @param selectedIndex - Index within the filtered list that should be highlighted.
+ * @param scrollRef - Ref attached to the scrollbox element to control or query scroll state.
+ * @param onSelect - Callback invoked with an item index when the mouse moves over that item.
+ * @param onExecute - Callback invoked with an item index when the mouse is pressed on that item.
+ * @returns A React element containing either a dimmed "No matchingcommands" message when there are no matches, or a scrollable list of the filtered commands with the selected item highlighted and mouse handlers wired for selection and execution.
+ */
 export function CommandMenu({
     query,
     selectedIndex,
