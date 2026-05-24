@@ -47,13 +47,9 @@ export function useCommandMenu(): UseCommandMenuReturn {
         if (scrollbox) {
             scrollbox.scrollTo(0);
         }
-
-        const prefix = text.startsWith("/") ? text.slice(1) : "";
-        if (prefix !== null && !prefix.includes(" ")) {
-            setShowCommandMenu(true);
-        } else {
-            setShowCommandMenu(false);
-        }
+        const isCommandInput = text.startsWith('/');
+        const prefix = isCommandInput ? text.slice(1) : ""
+        setShowCommandMenu(isCommandInput && !prefix.includes(" "))
     }
 
     useKeyboard((key) => {
