@@ -15,6 +15,21 @@ type UseCommandMenuReturn = {
 }
 
 
+/**
+ * Manage state and handlers for a slash-command menu used in a text input.
+ *
+ * Exposes derived query/filtering state, selection and scroll control, and handlers to update content,
+ * resolve a selection, and programmatically set the selected index.
+ *
+ * @returns An object containing:
+ * - `showCommandMenu` — whether the command menu is currently visible
+ * - `commandQuery` — the current query string (text after a leading `/`) when the menu is shown, otherwise `""`
+ * - `selectedIndex` — index of the currently highlighted command in `filteredCommands`
+ * - `scrollRef` — ref to the scrollable container used to keep the highlighted item in view
+ * - `resolveCommand` — function `(index: number) => Command | undefined` that returns the command at the given filtered index and hides the menu when a command is found
+ * - `handleContentChange` — function `(text: string) => void` to update input text, reset selection, scroll to top, and toggle menu visibility based on the typed prefix
+ * - `setSelectedIndex` — setter to update the highlighted command index
+ */
 export function useCommandMenu(): UseCommandMenuReturn {
     const [textValue, setTextValue] = useState("")
     const [selectedIndex, setSelectedIndex] = useState(0);
