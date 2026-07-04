@@ -1,7 +1,11 @@
 import { createCliRenderer } from "@opentui/core";
 import { createRoot } from "@opentui/react";
-import { Header } from "../components/header";
-import { InputBar } from "../components/input-bar";
+import { Header } from "./components/header";
+import { InputBar } from "./components/input-bar";
+import { ToastProvider } from "./providers/toasts";
+import { KeyboardLayerProvider } from "./providers/keyboard-layer";
+import { DialogProvider } from "./providers/dialog";
+import { ThemeProvider, useTheme } from "./providers/themes";
 
 /**
  * Root application component that renders the centered CLI UI layout.
@@ -10,12 +14,15 @@ import { InputBar } from "../components/input-bar";
  *
  * @returns The top-level JSX element representing the application's layout.
  */
-function App() {
+
+function ThemedRoot() {
+  const { colors } = useTheme()
+
   return (
     <box
       alignItems="center"
       justifyContent="center"
-      backgroundColor="#0d0d12"
+      backgroundColor={colors.background}
       width="100%"
       height="100%"
       gap={2}
@@ -26,6 +33,22 @@ function App() {
         <InputBar onSubmit={() => { }} />
       </box>
     </box>
+  )
+}
+
+
+function App() {
+  return (
+    <ThemeProvider>
+      <KeyboardLayerProvider>
+        <DialogProvider>
+          <ToastProvider>
+            <ThemedRoot />
+          </ToastProvider>
+        </DialogProvider>
+      </KeyboardLayerProvider>
+    </ThemeProvider>
+
   );
 }
 

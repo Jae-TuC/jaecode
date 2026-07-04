@@ -3,6 +3,8 @@ import type { ScrollBoxRenderable } from "@opentui/core"
 import { useKeyboard } from "@opentui/react"
 import { getFilteredCommands } from "./filter-command"
 import type { Command } from "./types"
+import { useKeyboardLayer } from "../../providers/keyboard-layer"
+
 
 type UseCommandMenuReturn = {
     showCommandMenu: boolean;
@@ -36,8 +38,15 @@ export function useCommandMenu(): UseCommandMenuReturn {
     const [showCommandMenu, setShowCommandMenu] = useState(false);
     const scrollRef = useRef<ScrollBoxRenderable | null>(null);
 
+    const { push, pop, isTopLayer } = useKeyboardLayer()
+
     const commandQuery = showCommandMenu && textValue.startsWith("/") ? textValue.slice(1) : "";
     const filteredCommands = useMemo(() => getFilteredCommands(commandQuery), [commandQuery]);
+
+    const close = () => {
+        setShowCommandMenu(false);
+        pop("command")
+    }
 
     const handleContentChange = (text: string) => {
         setTextValue(text);
@@ -47,17 +56,30 @@ export function useCommandMenu(): UseCommandMenuReturn {
         if (scrollbox) {
             scrollbox.scrollTo(0);
         }
-        const isCommandInput = text.startsWith('/');
-        const prefix = isCommandInput ? text.slice(1) : ""
-        setShowCommandMenu(isCommandInput && !prefix.includes(" "))
+        // const isCommandInput = text.startsWith('/');
+        // const prefix = isCommandInput ? text.slice(1) : ""
+        // setShowCommandMenu(isCommandInput && !prefix.includes(" "))
+
+        const prefix = text.startsWith("/") ? text.slice(1) : null
+        if (prefix !== null && !prefix.includes(" ")) {
+            setShowCommandMenu(true)
+            push("command", () => {
+                close()
+                return true
+            })
+        } else {
+            setShowCommandMenu(false)
+            pop("command")
+        }
+
     }
 
     useKeyboard((key) => {
-        if (!showCommandMenu) return;
+        if (!showCommandMenu && !isTopLayer("command")) return;
 
         if (key.name === "escape") {
             key.preventDefault()
-            setShowCommandMenu(false);
+            close()
         } else if (key.name === "up") {
             key.preventDefault();
             setSelectedIndex((i: number) => {
@@ -94,7 +116,7 @@ export function useCommandMenu(): UseCommandMenuReturn {
     const resolveCommand = (index: number): Command | undefined => {
         const command = filteredCommands[index];
         if (command) {
-            setShowCommandMenu(false);
+            close()
         }
         return command;
     }
